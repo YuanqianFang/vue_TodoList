@@ -1,27 +1,40 @@
 <template>
     <li>
         <label>
-        <input type="checkbox" :checked="todo.done" @change="handleCheck(todo.id)"/>
-        <span>{{todo.title}}</span>
+          <input type="checkbox" :checked="todo.done" @change="handleCheck(todo.id)"/>
+          <span v-show="!todo.isEdit">{{todo.title}}</span>
+          <input  
+          type="text" 
+          v-show="todo.isEdit" 
+          :value="todo.title" 
+          @blur="handleBlur(todo,$event)">
         </label>
         <button class="btn btn-danger" @click="deleteItem(todo.id)">删除</button>
+        <button class="btn btn-edit" v-show="!todo.isEdit" @click="handleEdit(todo)">编辑</button>
     </li>
 </template>
 
 <script>
 export default {
     name:'MyItem',
-    props:['todo','checkTodo','deleteTodo'],
+    props:['todo'],
     methods: {
       handleCheck(id){
-        //通知APP组件 修改 done 值
-        this.checkTodo(id)
+        this.$bus.$emit('checkTodo',id)
       },
 
       deleteItem(id){
         if(confirm('确定删除吗？')){
-          this.deleteTodo(id)
+          this.$bus.$emit('deleteTodo',id)
         }
+      },
+      handleEdit(todo){
+        todo.isEdit = true
+      },
+      handleBlur(todo,e){
+        todo.isEdit = false 
+        if(! e.target.value.trim()) return alert("输入不能为空！")
+        this.$bus.$emit('updateTodo',todo.id,e.target.value)
       }
     },
 }

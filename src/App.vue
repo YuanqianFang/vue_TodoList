@@ -3,7 +3,7 @@
   <div class="todo-container">
     <div class="todo-wrap">
       <MyHeader @addTodo="addTodo"/>
-      <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo" />
+      <MyList :todos="todos"/>
       <MyFooter :todos="todos" @checkAllTodo="checkAllTodo" @clearDone="clearDone"/>
     </div>
   </div>
@@ -53,6 +53,12 @@ export default {
       this.todos = this.todos.filter((todo)=>{
         return !todo.done
       })
+    },
+    //更新一个item的title
+    updateTodo(id,newTitle){
+      this.todos.forEach((todo)=>{
+        if(todo.id === id) todo.title = newTitle
+      })
     }
 
   },
@@ -63,7 +69,18 @@ export default {
         localStorage.setItem('todos',JSON.stringify(value))
       }
     },
-
+  },
+  //绑定全局事件总线
+  mounted(){
+    this.$bus.$on('checkTodo',this.checkTodo)
+    this.$bus.$on('deleteTodo',this.deleteTodo)
+    this.$bus.$on('updateTodo',this.updateTodo)
+  },
+  //解绑
+  beforeDestroy(){
+    this.$bus.$off('checkTodo')
+    this.$bus.$off('deleteTodo')
+    this.$bus.$off('updateTodo')
   }
 }
 </script>
@@ -93,6 +110,16 @@ export default {
   .btn-danger:hover {
     color: #fff;
     background-color: #bd362f;
+  }
+  .btn-edit{
+    color: #fff;
+    background-color: skyblue;
+    border: 1px solid rgb(34, 147, 192);
+    margin-right: 5px;
+  }
+  .btn-edit:hover {
+    color: #fff;
+    background-color: #0390bb;
   }
   .btn:focus {
     outline: none;

@@ -17,7 +17,7 @@ export default {
       add(){
         if(!this.title.trim()) return alert("输入不能为空")
         //将用户的输入包装成为一个对象
-        const todoObj = {id:nanoid(),title:this.title,done:false}
+        const todoObj = {id:nanoid(),title:this.title,done:false,isEdit:false}
         //通过调用App VC传的函数 将对象作为参数传送给 App VC 
         this.$emit('addTodo',todoObj)
         //添加过后清空input框
